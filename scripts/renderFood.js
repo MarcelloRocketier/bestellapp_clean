@@ -8,7 +8,11 @@ const foodItems = [
   ];
   
   let cart = [];
-  
+const savedCart = localStorage.getItem("cart");
+if (savedCart) {
+  cart = JSON.parse(savedCart);
+}
+
   function addToCart(id) {
     const item = foodItems.find((food) => food.id === id);
     const cartItem = cart.find((i) => i.id === id);
@@ -20,6 +24,11 @@ const foodItems = [
     }
   
     renderCart();
+    saveCart();
+  }
+  
+  function saveCart() {
+    localStorage.setItem("cart", JSON.stringify(cart));
   }
   
   function renderCart() {
@@ -33,7 +42,16 @@ const foodItems = [
   
     cart.forEach((item) => {
       cartContainer.innerHTML += `
-        <p>${item.name} x ${item.quantity} — ${(item.price * item.quantity).toFixed(2)} €</p>
+        <div class="cart-item">
+          <span>${item.name}</span>
+          <span>
+            <button onclick="changeQuantity(${item.id}, -1)">➖</button>
+            ${item.quantity}
+            <button onclick="changeQuantity(${item.id}, 1)">➕</button>
+            <button onclick="removeFromCart(${item.id})">🗑</button>
+          </span>
+          <span>${(item.price * item.quantity).toFixed(2)} €</span>
+        </div>
       `;
     });
   
@@ -41,11 +59,28 @@ const foodItems = [
     cartContainer.innerHTML += `<hr><p><strong>Gesamt: ${total.toFixed(2)} €</strong></p>`;
   }
   
+  function changeQuantity(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
   
+    item.quantity += delta;
+    if (item.quantity <= 0) {
+      cart = cart.filter(i => i.id !== id);
+    }
+  
+    renderCart();
+    saveCart();
+  }
+  
+  function removeFromCart(id) {
+    cart = cart.filter(i => i.id !== id);
+    renderCart();
+    saveCart();
+  }
+    
   function renderMenu() {
     const menuSection = document.querySelector(".menu");
-    menuSection.innerHTML = ""; // alte Inhalte löschen
-  
+    menuSection.innerHTML = ""; 
     foodItems.forEach((item) => {
       menuSection.innerHTML += `
         <div class="food-card">
@@ -58,5 +93,27 @@ const foodItems = [
     });
   }
   
-  document.addEventListener("DOMContentLoaded", renderMenu);
-  
+window.addToCart = addToCart;
+window.changeQuantity = changeQuantity;
+window.removeFromCart = removeFromCart;
+
+document.addEventListener("DOMContentLoaded", () => {
+  renderMenu();
+  renderCart();
+
+  const orderBtn = document.getElementById("order-button");
+  if (orderBtn) {
+    orderBtn.addEventListener("click", () => {
+      if (cart.length === 0) {
+        alert("Dein Warenkorb ist leer.");
+        return;
+      }
+
+      alert("Vielen Dank für deine Bestellung!");
+      cart = [];
+      saveCart();
+      renderCart();
+    });
+  }
+});
+
