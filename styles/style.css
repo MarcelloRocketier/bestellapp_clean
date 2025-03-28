@@ -95,6 +95,33 @@ body {
     text-align: right;
     margin-top: 15px;
   }
+
+  #order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  #order-form input,
+  #order-form textarea {
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1em;
+  }
+  
+  #submit-order {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  #submit-order:hover {
+    background-color: #0056b3;
+  }
   
   #order-button {
     background-color: #28a745;
@@ -134,5 +161,100 @@ body {
       align-items: flex-start;
       gap: 6px;
     }
+  }
+
+  .filters {
+    margin-bottom: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .filters select {
+    padding: 8px 12px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+  }
+    
+  .filters button {
+    padding: 8px 12px;
+    border: none;
+    background-color: #eee;
+    cursor: pointer;
+    border-radius: 5px;
+  }
+
+  .filters button.active {
+    background-color: orange;
+    color: white;
+    font-weight: bold;
+  }
+  
+  .filters button:hover {
+    background-color: #ccc;
+  }
+  
+
+  body.darkmode {
+    background-color: #121212;
+    color: #f0f0f0;
+  }
+  
+  body.darkmode header {
+    background-color: #1f1f1f;
+  }
+  
+  body.darkmode .food-card,
+  body.darkmode .cart {
+    background-color: #2c2c2c;
+    color: #f0f0f0;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+  }
+  
+  body.darkmode #order-button {
+    background-color: #006644;
+  }
+  
+  body.darkmode #order-button:hover {
+    background-color: #008755;
+  }
+  
+  .cart {
+    position: fixed;
+    top: 0;
+    right: -400px;
+    width: 350px;
+    height: 100vh;
+    background-color: #fff;
+    box-shadow: -2px 0 10px rgba(0,0,0,0.1);
+    overflow-y: auto;
+    transition: right 0.3s ease-in-out;
+    z-index: 1000;
+    padding: 20px;
+  }
+  
+  body.darkmode .cart {
+    background-color: #1f1f1f;
+  }
+  
+  .cart.open {
+    right: 0;
+  }
+  
+  #cart-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1100;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    background-color: orange;
+    color: white;
+    cursor: pointer;
+  }
+  
+  #cart-toggle:hover {
+    background-color: darkorange;
   }
   

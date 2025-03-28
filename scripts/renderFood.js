@@ -1,10 +1,10 @@
 const foodItems = [
-  { id: 1, name: "Quesadilla", image: "img/food/quesadilla.jpg", price: 6.5 },
-  { id: 2, name: "Tacos al Pastor", image: "img/food/tacosalpastor.jpg", price: 7 },
-  { id: 3, name: "Tamales", image: "img/food/tamales.jpg", price: 5 },
-  { id: 4, name: "Fajitas", image: "img/food/fajitas.jpg", price: 7.5 },
-  { id: 5, name: "Chili con Carne", image: "img/food/chiliconcarne.jpg", price: 6 },
-  { id: 6, name: "Ceviche", image: "img/food/ceviche.jpg", price: 6.5 },
+  { id: 1, name: "Quesadilla", image: "img/food/quesadilla.jpg", price: 6.5, category: "Vegetarisch" },
+  { id: 2, name: "Tacos al Pastor", image: "img/food/tacosalpastor.jpg", price: 7, category: "Tacos" },
+  { id: 3, name: "Tamales", image: "img/food/tamales.jpg", price: 5, category: "Vegetarisch" },
+  { id: 4, name: "Fajitas", image: "img/food/fajitas.jpg", price: 7.5, category: "Fleisch" },
+  { id: 5, name: "Chili con Carne", image: "img/food/chiliconcarne.jpg", price: 6, category: "Fleisch" },
+  { id: 6, name: "Ceviche", image: "img/food/ceviche.jpg", price: 6.5, category: "Meeresfrüchte" },
 ];
 
 let cart = [];
@@ -14,8 +14,8 @@ if (savedCart) {
 }
 
 function addToCart(id) {
-  const item = foodItems.find((food) => food.id === id);
-  const cartItem = cart.find((i) => i.id === id);
+  const item = foodItems.find(food => food.id === id);
+  const cartItem = cart.find(i => i.id === id);
 
   if (cartItem) {
     cartItem.quantity++;
@@ -40,7 +40,7 @@ function renderCart() {
     return;
   }
 
-  cart.forEach((item) => {
+  cart.forEach(item => {
     cartContainer.innerHTML += `
       <div class="cart-item">
         <span>${item.name}</span>
@@ -78,10 +78,28 @@ function removeFromCart(id) {
   saveCart();
 }
 
-function renderMenu() {
+function renderMenu(filter = "Alle") {
   const menuSection = document.querySelector(".menu");
   menuSection.innerHTML = "";
-  foodItems.forEach((item) => {
+
+  let filteredItems = filter === "Alle"
+    ? [...foodItems]
+    : foodItems.filter(item => item.category === filter);
+
+  const sortSelect = document.getElementById("sort-select");
+  const sortValue = sortSelect ? sortSelect.value : "";
+
+  if (sortValue === "price-asc") {
+    filteredItems.sort((a, b) => a.price - b.price);
+  } else if (sortValue === "price-desc") {
+    filteredItems.sort((a, b) => b.price - a.price);
+  } else if (sortValue === "name-asc") {
+    filteredItems.sort((a, b) => a.name.localeCompare(b.name));
+  } else if (sortValue === "name-desc") {
+    filteredItems.sort((a, b) => b.name.localeCompare(a.name));
+  }
+
+  filteredItems.forEach(item => {
     menuSection.innerHTML += `
       <div class="food-card">
         <img src="${item.image}" alt="${item.name}" />
@@ -93,19 +111,35 @@ function renderMenu() {
   });
 }
 
-function initApp() {
-  renderMenu();
-  renderCart();
+function renderFilters() {
+  const categories = ["Alle", ...new Set(foodItems.map(item => item.category))];
+  const container = document.getElementById("filter-buttons");
+  container.innerHTML = "";
 
-  const orderBtn = document.getElementById("order-button");
-  if (orderBtn) {
-    orderBtn.onclick = handleOrder;
+  categories.forEach(category => {
+    const button = document.createElement("button");
+    button.textContent = category;
+    button.onclick = () => {
+      document.querySelectorAll("#filter-buttons button").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderMenu(category);
+    };
+    container.appendChild(button);
+  });
+
+  const defaultBtn = container.querySelector("button");
+  if (defaultBtn) {
+    defaultBtn.classList.add("active");
   }
 }
 
-function handleOrder() {
-  if (cart.length === 0) {
-    alert("Dein Warenkorb ist leer.");
+function submitOrder() {
+  const name = document.getElementById("customer-name").value.trim();
+  const address = document.getElementById("customer-address").value.trim();
+  const note = document.getElementById("customer-note").value.trim();
+
+  if (!name || !address) {
+    alert("Bitte fülle Name und Adresse aus.");
     return;
   }
 
@@ -115,16 +149,78 @@ function handleOrder() {
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const confirmText = `Deine Bestellung:\n\n${summary}\n\nGesamt: ${total.toFixed(2)} €\n\nJetzt wirklich bestellen?`;
+  const message = `Bestellung von ${name}\nAdresse: ${address}\n\n${summary}\n\nGesamt: ${total.toFixed(2)} €\n\nNotiz: ${note || "-"}`;
 
-  if (confirm(confirmText)) {
-    alert("Vielen Dank für deine Bestellung!");
-    cart = [];
-    saveCart();
-    renderCart();
-  }
+  alert("Vielen Dank für deine Bestellung!\n\n" + message);
+
+  cart = [];
+  saveCart();
+  renderCart();
+  document.getElementById("order-form").style.display = "none";
 }
 
+function handleOrder() {
+  if (cart.length === 0) {
+    alert("Dein Warenkorb ist leer.");
+    return;
+  }
+
+  document.getElementById("order-form").style.display = "flex";
+}
+
+function setupCartToggle() {
+  const cart = document.querySelector(".cart");
+  const toggleBtn = document.getElementById("cart-toggle");
+
+  toggleBtn.onclick = function () {
+    cart.classList.toggle("open");
+  };
+}
+
+function setupDarkmode() {
+  const toggleBtn = document.getElementById("darkmode-toggle");
+  const savedMode = localStorage.getItem("darkmode");
+
+  if (savedMode === "on") {
+    document.body.classList.add("darkmode");
+  }
+
+  toggleBtn.onclick = function () {
+    document.body.classList.toggle("darkmode");
+    const isDark = document.body.classList.contains("darkmode");
+    localStorage.setItem("darkmode", isDark ? "on" : "off");
+  };
+}
+
+function initApp() {
+  renderFilters();
+  renderMenu();
+  renderCart();
+
+  const orderBtn = document.getElementById("order-button");
+  if (orderBtn) {
+    orderBtn.onclick = handleOrder;
+  }
+
+  const submitBtn = document.getElementById("submit-order");
+  if (submitBtn) {
+    submitBtn.onclick = submitOrder;
+  }
+
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.onchange = function () {
+      const activeFilterBtn = document.querySelector("#filter-buttons button.active");
+      const activeCategory = activeFilterBtn ? activeFilterBtn.textContent : "Alle";
+      renderMenu(activeCategory);
+    };
+  }
+
+  setupDarkmode();
+  setupCartToggle();
+}
+
+// Damit auch Inline-Handler funktionieren
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;

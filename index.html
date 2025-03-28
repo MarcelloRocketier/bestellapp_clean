@@ -9,17 +9,36 @@
 <body onload="initApp()">
   <header>
     <h1>Willkommen zur Bestell-App!</h1>
+    <button id="darkmode-toggle">Darkmode</button>
+    <button id="cart-toggle">Warenkorb anzeigen</button>
   </header>
   
   <main>
     <section class="cart">
-        <h2>🛒 Dein Warenkorb</h2>
+        <h2>Dein Warenkorb</h2>
         <div id="cart-items"></div>
         <div class="cart-buttons">
           <button id="order-button">Jetzt bestellen</button>
-        </div>        
+        </div>
+        
+        <div id="order-form" style="display: none; margin-top: 20px;">
+          <h3>Bestellung abschließen</h3>
+          <input type="text" id="customer-name" placeholder="Dein Name" required />
+          <input type="text" id="customer-address" placeholder="Deine Adresse" required />
+          <textarea id="customer-note" placeholder="Notiz (optional)"></textarea>
+          <button id="submit-order">Bestellung absenden</button>
+        </div>
+        
       </section>
-      
+      <div id="filter-buttons" class="filters">
+        <select id="sort-select">
+          <option value="">Sortieren...</option>
+          <option value="price-asc">Preis aufsteigend</option>
+          <option value="price-desc">Preis absteigend</option>
+          <option value="name-asc">Name A–Z</option>
+          <option value="name-desc">Name Z–A</option>
+        </select>        
+      </div>
     <section class="menu">
     </section>
   </main>
