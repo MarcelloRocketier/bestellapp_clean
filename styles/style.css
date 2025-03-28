@@ -2,20 +2,15 @@
 
 body {
   font-family: 'Karla', sans-serif;
-  /* … */
+  background-color: #f7f7f7;
+  color: #333;
+  padding: 20px;
 }
 
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-  }
-  
-  body {
-    font-family: sans-serif;
-    background-color: #f7f7f7;
-    color: #333;
-    padding: 20px;
   }
   
   header {
@@ -113,5 +108,31 @@ body {
   
   #order-button:hover {
     background-color: #218838;
+  }
+  
+  @media (max-width: 600px) {
+    body {
+      padding: 10px;
+    }
+  
+    .food-card h2 {
+      font-size: 1.1em;
+    }
+  
+    .food-card p,
+    .cart-item span {
+      font-size: 0.95em;
+    }
+  
+    #order-button {
+      width: 100%;
+      font-size: 1.1em;
+    }
+  
+    .cart-item {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 6px;
+    }
   }
   
