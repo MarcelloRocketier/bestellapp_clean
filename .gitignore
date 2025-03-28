@@ -1,1 +1,34 @@
+# macOS-Systemdateien
 .DS_Store
+.AppleDouble
+.LSOverride
+
+# VS Code Einstellungen (lokal, nicht ins Repo)
+.vscode/
+
+# Thumbnails & Cache
+._*
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Logs / temporäre Dateien
+*.log
+*.tmp
+*.bak
+*.swp
+
+# npm (falls später Node.js dazukommt)
+node_modules/
+package-lock.json
+
+# Versteckte Systemdateien
+Icon?
+.Spotlight-V100
+.Trashes
+
+# Sonstiges
+*.zip
+*.tar
+*.gz
+*.rar

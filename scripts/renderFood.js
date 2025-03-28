@@ -220,7 +220,6 @@ function initApp() {
   setupCartToggle();
 }
 
-// Damit auch Inline-Handler funktionieren
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;
