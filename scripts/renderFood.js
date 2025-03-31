@@ -40,7 +40,7 @@ function renderCart() {
     return;
   }
 
-  cart.forEach(item => {
+  cart.forEach((item) => {
     cartContainer.innerHTML += `
       <div class="cart-item">
         <span>${item.name}</span>
@@ -99,7 +99,7 @@ function renderMenu(filter = "Alle") {
     filteredItems.sort((a, b) => b.name.localeCompare(a.name));
   }
 
-  filteredItems.forEach(item => {
+  filteredItems.forEach((item) => {
     menuSection.innerHTML += `
       <div class="food-card">
         <img src="${item.image}" alt="${item.name}" />
@@ -124,13 +124,12 @@ function renderFilters() {
       button.classList.add("active");
       renderMenu(category);
     };
+
     container.appendChild(button);
   });
 
   const defaultBtn = container.querySelector("button");
-  if (defaultBtn) {
-    defaultBtn.classList.add("active");
-  }
+  if (defaultBtn) defaultBtn.classList.add("active");
 }
 
 function submitOrder() {
@@ -143,20 +142,26 @@ function submitOrder() {
     return;
   }
 
-  const summary = cart.map(item => {
-    return `${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)} €`;
-  }).join("\n");
+  const summary = cart.map(item =>
+    `${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)} €`
+  ).join("<br>");
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  const message = `Bestellung von ${name}\nAdresse: ${address}\n\n${summary}\n\nGesamt: ${total.toFixed(2)} €\n\nNotiz: ${note || "-"}`;
+  const message = `
+    <strong>Name:</strong> ${name}<br>
+    <strong>Adresse:</strong> ${address}<br><br>
+    <strong>Bestellung:</strong><br>${summary}<br><br>
+    <strong>Gesamt:</strong> ${total.toFixed(2)} €<br>
+    <strong>Notiz:</strong> ${note || "-"}`;
 
-  alert("Vielen Dank für deine Bestellung!\n\n" + message);
+  document.getElementById("order-summary-text").innerHTML = message;
+  document.getElementById("order-success").classList.remove("hidden");
 
   cart = [];
   saveCart();
   renderCart();
-  document.getElementById("order-form").style.display = "none";
+  document.getElementById("order-form").classList.add("hidden-order-form");
 }
 
 function handleOrder() {
@@ -165,15 +170,15 @@ function handleOrder() {
     return;
   }
 
-  document.getElementById("order-form").style.display = "flex";
+  document.getElementById("order-form").classList.remove("hidden-order-form");
 }
 
 function setupCartToggle() {
-  const cart = document.querySelector(".cart");
+  const cartEl = document.querySelector(".cart");
   const toggleBtn = document.getElementById("cart-toggle");
 
-  toggleBtn.onclick = function () {
-    cart.classList.toggle("open");
+  toggleBtn.onclick = () => {
+    cartEl.classList.toggle("open");
   };
 }
 
@@ -185,7 +190,7 @@ function setupDarkmode() {
     document.body.classList.add("darkmode");
   }
 
-  toggleBtn.onclick = function () {
+  toggleBtn.onclick = () => {
     document.body.classList.toggle("darkmode");
     const isDark = document.body.classList.contains("darkmode");
     localStorage.setItem("darkmode", isDark ? "on" : "off");
@@ -197,29 +202,30 @@ function initApp() {
   renderMenu();
   renderCart();
 
-  const orderBtn = document.getElementById("order-button");
-  if (orderBtn) {
-    orderBtn.onclick = handleOrder;
-  }
-
   const submitBtn = document.getElementById("submit-order");
-  if (submitBtn) {
-    submitBtn.onclick = submitOrder;
-  }
+  if (submitBtn) submitBtn.onclick = submitOrder;
+
+  const orderBtn = document.getElementById("order-button");
+  if (orderBtn) orderBtn.onclick = handleOrder;
 
   const sortSelect = document.getElementById("sort-select");
   if (sortSelect) {
-    sortSelect.onchange = function () {
+    sortSelect.onchange = () => {
       const activeFilterBtn = document.querySelector("#filter-buttons button.active");
       const activeCategory = activeFilterBtn ? activeFilterBtn.textContent : "Alle";
       renderMenu(activeCategory);
     };
   }
 
-  setupDarkmode();
   setupCartToggle();
+  setupDarkmode();
 }
 
+function closeOrderModal() {
+  document.getElementById("order-success").classList.add("hidden");
+}
+
+window.closeOrderModal = closeOrderModal;
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;
 window.removeFromCart = removeFromCart;

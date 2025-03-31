@@ -1,51 +1,84 @@
 <!DOCTYPE html>
 <html lang="de">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
   <title>Bestell-App</title>
   <link rel="stylesheet" href="styles/style.css" />
+  <link rel="icon" href="img/icons/Favicon/favicon.ico" type="image/x-icon" />
 </head>
+
 <body onload="initApp()">
   <header>
-    <h1>Willkommen zur Bestell-App!</h1>
-    <button id="darkmode-toggle">Darkmode</button>
-    <button id="cart-toggle">Warenkorb anzeigen</button>
+    <img src="img/main/header.jpg" alt="Restaurant Header" class="header-image" />
+    <img src="img/icons/Logo.png" alt="Logo" class="logo" />
+    <div class="utility-buttons">
+      <button id="darkmode-toggle">Darkmode</button>
+      <button id="cart-toggle">Warenkorb</button>
+    </div>
   </header>
-  
-  <main>
-    <section class="cart">
-        <h2>Dein Warenkorb</h2>
-        <div id="cart-items"></div>
-        <div class="cart-buttons">
-          <button id="order-button">Jetzt bestellen</button>
-        </div>
-        
-        <div id="order-form" style="display: none; margin-top: 20px;">
-          <h3>Bestellung abschließen</h3>
-          <input type="text" id="customer-name" placeholder="Dein Name" required />
-          <input type="text" id="customer-address" placeholder="Deine Adresse" required />
-          <textarea id="customer-note" placeholder="Notiz (optional)"></textarea>
-          <button id="submit-order">Bestellung absenden</button>
-        </div>
-        
-      </section>
-      <div id="filter-buttons" class="filters">
-        <select id="sort-select">
-          <option value="">Sortieren...</option>
-          <option value="price-asc">Preis aufsteigend</option>
-          <option value="price-desc">Preis absteigend</option>
-          <option value="name-asc">Name A–Z</option>
-          <option value="name-desc">Name Z–A</option>
-        </select>        
+
+  <section class="restaurant-info">
+    <div class="restaurant-details">
+      <h1>Los Reyes de la Costa</h1>
+      <div class="info-icons">
+        <span class="rating"><span class="star"></span> 3,9 (44)</span>
+        <span class="min-order">Min. 20,00€</span>
+        <span class="delivery">Lieferung: 0,00€</span>
       </div>
-    <section class="menu">
-    </section>
+      <p class="description">
+        Authentische mexikanische Küche mit frischen Zutaten und traditionellen Rezepten. Genieße Tacos, Quesadillas und mehr – frisch zubereitet!
+      </p>
+    </div>
+  </section>
+
+  <main>
+    <div id="filter-buttons" class="filters"></div>
+
+    <div class="filters">
+      <select id="sort-select">
+        <option value="">Sortieren...</option>
+        <option value="price-asc">Preis aufsteigend</option>
+        <option value="price-desc">Preis absteigend</option>
+        <option value="name-asc">Name A–Z</option>
+        <option value="name-desc">Name Z–A</option>
+      </select>
+    </div>
+
+    <section class="menu"></section>
+
+    <aside class="cart">
+      <h2>Dein Warenkorb</h2>
+      <div id="cart-items"></div>
+      <div class="cart-buttons">
+        <button id="order-button">Jetzt bestellen</button>
+      </div>
+
+      <div id="order-form" class="hidden-order-form">
+        <h3>Bestellung abschließen</h3>
+        <input type="text" id="customer-name" placeholder="Dein Name" required />
+        <input type="text" id="customer-address" placeholder="Deine Adresse" required />
+        <textarea id="customer-note" placeholder="Notiz (optional)"></textarea>
+        <button id="submit-order">Bestellung absenden</button>
+      </div>
+    </aside>
   </main>
 
   <footer>
     <a href="rechtliches.html">Rechtliches</a>
   </footer>
+
   <script src="scripts/renderFood.js"></script>
+  
+  <div id="order-success" class="order-modal hidden">
+    <div class="order-modal-content">
+      <h2>Vielen Dank für deine Bestellung!</h2>
+      <p id="order-summary-text"></p>
+      <button onclick="closeOrderModal()">Schließen</button>
+    </div>
+  </div>
+  
 </body>
 </html>
