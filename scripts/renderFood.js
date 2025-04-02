@@ -1,3 +1,4 @@
+// Array der verfügbaren Gerichte
 const foodItems = [
   { id: 1, name: "Quesadilla", image: "img/food/quesadilla.jpg", price: 6.5, category: "Vegetarisch" },
   { id: 2, name: "Tacos al Pastor", image: "img/food/tacosalpastor.jpg", price: 7, category: "Tacos" },
@@ -7,12 +8,16 @@ const foodItems = [
   { id: 6, name: "Ceviche", image: "img/food/ceviche.jpg", price: 6.5, category: "Meeresfrüchte" },
 ];
 
+// Warenkorb (initial leer, eventuell aus localStorage laden)
 let cart = [];
 const savedCart = localStorage.getItem("cart");
 if (savedCart) {
   cart = JSON.parse(savedCart);
 }
 
+/* Funktionen für den Warenkorb */
+
+// Fügt ein Gericht zum Warenkorb hinzu
 function addToCart(id) {
   const item = foodItems.find(food => food.id === id);
   const cartItem = cart.find(i => i.id === id);
@@ -22,15 +27,16 @@ function addToCart(id) {
   } else {
     cart.push({ ...item, quantity: 1 });
   }
-
   renderCart();
   saveCart();
 }
 
+// Speichert den Warenkorb im LocalStorage
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
+// Rendert den Warenkorb und zeigt alle Artikel an
 function renderCart() {
   const cartContainer = document.getElementById("cart-items");
   cartContainer.innerHTML = "";
@@ -43,14 +49,14 @@ function renderCart() {
   cart.forEach((item) => {
     cartContainer.innerHTML += `
       <div class="cart-item">
-        <span>${item.name}</span>
-        <span>
-          <button onclick="changeQuantity(${item.id}, -1)">➖</button>
-          ${item.quantity}
-          <button onclick="changeQuantity(${item.id}, 1)">➕</button>
-          <button onclick="removeFromCart(${item.id})">🗑</button>
-        </span>
-        <span>${(item.price * item.quantity).toFixed(2)} €</span>
+        <span class="item-name">${item.name}</span>
+        <div class="quantity-control">
+          <button onclick="changeQuantity(${item.id}, -1)">-</button>
+          <span>${item.quantity}</span>
+          <button onclick="changeQuantity(${item.id}, 1)">+</button>
+        </div>
+        <span class="price">${(item.price * item.quantity).toFixed(2)} €</span>
+        <button class="remove-btn" onclick="removeFromCart(${item.id})">x</button>
       </div>
     `;
   });
@@ -59,6 +65,7 @@ function renderCart() {
   cartContainer.innerHTML += `<hr><p><strong>Gesamt: ${total.toFixed(2)} €</strong></p>`;
 }
 
+// Ändert die Menge eines Artikels
 function changeQuantity(id, delta) {
   const item = cart.find(i => i.id === id);
   if (!item) return;
@@ -67,17 +74,19 @@ function changeQuantity(id, delta) {
   if (item.quantity <= 0) {
     cart = cart.filter(i => i.id !== id);
   }
-
   renderCart();
   saveCart();
 }
 
+// Entfernt einen Artikel aus dem Warenkorb
 function removeFromCart(id) {
   cart = cart.filter(i => i.id !== id);
   renderCart();
   saveCart();
 }
+/* Funktionen für das Menü     */
 
+// Rendert das Menü basierend auf einem Filter (Kategorie)
 function renderMenu(filter = "Alle") {
   const menuSection = document.querySelector(".menu");
   menuSection.innerHTML = "";
@@ -111,6 +120,7 @@ function renderMenu(filter = "Alle") {
   });
 }
 
+// Rendert die Filter-Buttons basierend auf den Kategorien
 function renderFilters() {
   const categories = ["Alle", ...new Set(foodItems.map(item => item.category))];
   const container = document.getElementById("filter-buttons");
@@ -120,18 +130,29 @@ function renderFilters() {
     const button = document.createElement("button");
     button.textContent = category;
     button.onclick = () => {
+      // Entfernt die aktive Klasse von allen Buttons und fügt sie dem geklickten Button hinzu
       document.querySelectorAll("#filter-buttons button").forEach(btn => btn.classList.remove("active"));
       button.classList.add("active");
       renderMenu(category);
     };
-
     container.appendChild(button);
   });
 
   const defaultBtn = container.querySelector("button");
   if (defaultBtn) defaultBtn.classList.add("active");
 }
+/* Funktionen für Bestellungen */
 
+// Öffnet das Bestellformular (falls der Warenkorb nicht leer ist)
+function handleOrder() {
+  if (cart.length === 0) {
+    alert("Dein Warenkorb ist leer.");
+    return;
+  }
+  document.getElementById("order-form").classList.remove("hidden-order-form");
+}
+
+// Zeigt das Order Success Modal an und leert den Warenkorb
 function submitOrder() {
   const name = document.getElementById("customer-name").value.trim();
   const address = document.getElementById("customer-address").value.trim();
@@ -147,7 +168,6 @@ function submitOrder() {
   ).join("<br>");
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-
   const message = `
     <strong>Name:</strong> ${name}<br>
     <strong>Adresse:</strong> ${address}<br><br>
@@ -155,24 +175,26 @@ function submitOrder() {
     <strong>Gesamt:</strong> ${total.toFixed(2)} €<br>
     <strong>Notiz:</strong> ${note || "-"}`;
 
+  // Zeige die Bestellzusammenfassung im Modal
   document.getElementById("order-summary-text").innerHTML = message;
   document.getElementById("order-success").classList.remove("hidden");
 
+  // Warenkorb leeren und speichern
   cart = [];
   saveCart();
   renderCart();
+  // Schließe das Bestellformular
   document.getElementById("order-form").classList.add("hidden-order-form");
 }
 
-function handleOrder() {
-  if (cart.length === 0) {
-    alert("Dein Warenkorb ist leer.");
-    return;
-  }
-
-  document.getElementById("order-form").classList.remove("hidden-order-form");
+// Schließt das Bestellbestätigungs-Modal
+function closeOrderModal() {
+  document.getElementById("order-success").classList.add("hidden");
 }
 
+/* Funktionen für Toggle & Darkmode */
+
+// Toggle für den Warenkorb (insbesondere für Mobile)
 function setupCartToggle() {
   const cartEl = document.querySelector(".cart");
   const toggleBtn = document.getElementById("cart-toggle");
@@ -182,6 +204,7 @@ function setupCartToggle() {
   };
 }
 
+// Darkmode-Einstellungen
 function setupDarkmode() {
   const toggleBtn = document.getElementById("darkmode-toggle");
   const savedMode = localStorage.getItem("darkmode");
@@ -197,6 +220,7 @@ function setupDarkmode() {
   };
 }
 
+// Init-Funktion, die beim Laden der Seite aufgerufen wird
 function initApp() {
   renderFilters();
   renderMenu();
@@ -217,14 +241,13 @@ function initApp() {
     };
   }
 
+  // Setze Toggle-Funktion für den Warenkorb
   setupCartToggle();
+  // Setze Darkmode-Funktionalität
   setupDarkmode();
 }
 
-function closeOrderModal() {
-  document.getElementById("order-success").classList.add("hidden");
-}
-
+// Exponiere Funktionen im globalen Scope, falls nötig
 window.closeOrderModal = closeOrderModal;
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;

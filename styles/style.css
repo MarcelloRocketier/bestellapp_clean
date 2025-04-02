@@ -1,5 +1,6 @@
 @import url("fonts.css");
 
+/* Grundlegende Stile */
 * {
   margin: 0;
   padding: 0;
@@ -14,11 +15,17 @@ body {
   transition: background 0.3s, color 0.3s;
 }
 
+.hidden {
+  display: none !important;
+}
+
+/* Darkmode Einstellungen */
 .darkmode {
   background-color: #1c1c1c;
   color: #f1f1f1;
 }
 
+/* HEADER */
 header {
   position: relative;
   margin-bottom: 60px;
@@ -31,6 +38,7 @@ header {
   display: block;
 }
 
+/* Logo – halb über dem Headerbild */
 .logo {
   width: 220px;
   height: auto;
@@ -45,6 +53,7 @@ header {
   z-index: 2;
 }
 
+/* Utility Buttons (Darkmode & Warenkorb) */
 button#darkmode-toggle,
 button#cart-toggle {
   position: absolute;
@@ -66,11 +75,13 @@ button#cart-toggle {
   right: 10px;
 }
 
+/* MAIN */
 main {
   padding: 20px;
   margin-top: 40px;
 }
 
+/* FOOTER */
 footer {
   text-align: center;
   padding-top: 30px;
@@ -78,6 +89,7 @@ footer {
   font-size: 0.9em;
 }
 
+/* MENÜ */
 .menu {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -96,8 +108,7 @@ footer {
 
 .food-card:hover {
   box-shadow: 0 8px 18px rgba(0,0,0,0.15);
-  transform: translateY(-5px);
-  transform: scale(1.02);
+  transform: translateY(-5px) scale(1.02);
 }
 
 .food-card img {
@@ -112,7 +123,15 @@ footer {
   font-size: 1.2em;
 }
 
+/* WARENKORB (Desktop) */
 .cart {
+  width: 300px;
+  position: sticky;
+  top: 20px;
+  right: 10px;
+  max-height: calc(100vh - 40px);
+  overflow-y: auto;
+  z-index: 10;
   background-color: #fff;
   padding: 20px;
   border-radius: 10px;
@@ -129,6 +148,7 @@ footer {
   margin: 5px 0;
 }
 
+/* Einzelne Warenkorb-Zeile als Flex-Container */
 .cart-item {
   display: flex;
   justify-content: space-between;
@@ -137,11 +157,26 @@ footer {
   border-bottom: 1px solid #eee;
 }
 
-.cart-item span {
-  display: inline-block;
-  margin: 0 5px;
+/* Container für den Artikelnamen */
+.item-name {
+  flex: 1;
+  font-weight: 600;
 }
 
+/* Gruppe für die Mengensteuerung */
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Fester Platz für Preisanzeige */
+.price {
+  width: 60px;
+  text-align: right;
+}
+
+/* Buttons im Warenkorb */
 .cart-item button {
   margin: 0 2px;
   padding: 4px 8px;
@@ -152,20 +187,24 @@ footer {
   border-radius: 4px;
 }
 
+/* Hover-Effekt für Warenkorb-Buttons */
+.cart-buttons button,
+.cart-item button {
+  transition: background-color 0.3s, transform 0.3s;
+}
+
+.cart-buttons button:hover,
+.cart-item button:hover {
+  background-color: #ff8800;
+  transform: scale(1.05);
+}
+
 .cart-buttons {
   text-align: right;
   margin-top: 15px;
 }
 
-.cart-buttons button, .cart-item button {
-  transition: background-color 0.3s, transform 0.3s;
-}
-
-.cart-buttons button:hover, .cart-item button:hover {
-  background-color: #ff8800;
-  transform: scale(1.05);
-}
-
+/* Bestellbuttons */
 #order-button,
 #submit-order {
   background-color: #28a745;
@@ -182,6 +221,7 @@ footer {
   background-color: #218838;
 }
 
+/* Bestellformular */
 #order-form {
   margin-top: 20px;
   display: flex;
@@ -203,6 +243,7 @@ footer {
   transition: box-shadow 0.3s;
 }
 
+/* FILTERS */
 .filters {
   margin: 30px 0;
   display: flex;
@@ -236,6 +277,7 @@ footer {
   border: 1px solid #ccc;
 }
 
+/* DARKMODE */
 .darkmode .cart,
 .darkmode .food-card,
 .darkmode .filters button,
@@ -250,57 +292,57 @@ footer {
   color: #fff;
 }
 
-@media (min-width: 992px) {
+/* Mobile Warenkorb & Toggle */
+@media (max-width: 768px) {
   .cart {
-    position: sticky;
-    top: 20px;
-    align-self: start;
-    max-height: calc(100vh - 40px);
-    overflow-y: auto;
-  }
-
-  #cart-toggle {
-    display: none;
-  }
-}
-
-@media (max-width: 991px) {
-  .cart {
-    display: none;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: white;
+    z-index: 9999;
+    padding: 15px;
+    display: none;  /* Standardmäßig ausgeblendet */
+    border-radius: 15px 15px 0 0;
   }
 
   .cart.open {
     display: block;
-    position: fixed;
-    bottom: 20px;
-    left: 10px;
-    right: 10px;
-    background: white;
-    z-index: 999;
-    max-height: 70vh;
-    overflow-y: auto;
-    border-radius: 15px;
-    padding: 25px;
-    box-shadow: 0 8px 16px rgba(0,0,0,0.3);
   }
 
   #cart-toggle {
-    display: block;
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
+    bottom: 10px;
+    right: 10px;
     background-color: #ff8008;
     color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 25px;
-    font-size: 1em;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    padding: 15px;
+    font-size: 1.2em;
+    border-radius: 50%;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     cursor: pointer;
+    z-index: 10000;
   }
 }
 
+/* Desktop: Zwei-Spalten-Layout für Main */
+@media (min-width: 992px) {
+  main {
+    display: grid;
+    grid-template-columns: 1fr 320px; /* Menü in erster Spalte, Warenkorb in zweiter Spalte */
+    gap: 20px;
+    align-items: start;
+  }
+  
+  .cart {
+    width: 320px;
+    margin: 0;
+    position: sticky;
+    top: 20px;
+  }
+}
+
+/* RESTAURANT INFO STYLE */
 .restaurant-info {
   text-align: center;
   padding: 20px;
@@ -361,6 +403,7 @@ footer {
   );
 }
 
+/* ORDER MODAL */
 .order-modal {
   position: fixed;
   top: 0;
@@ -403,7 +446,7 @@ footer {
   background-color: #e08000;
 }
 
-.hidden {
+.order-modal-content .hidden {
   display: none;
 }
 
