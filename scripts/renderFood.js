@@ -254,7 +254,6 @@ function setupDarkmode() {
 }
 
 /* Hilfsfunktionen (Refactoring)  */
-/* Neue Funktion sortItems() hinzugefügt */
 /**
  * Sortiert ein Array von Items basierend auf dem angegebenen Sortierwert.
  * @param {Array} items - Die zu sortierenden Items.
@@ -277,7 +276,7 @@ function sortItems(items, sortValue) {
   }
 }
 
-/* Neue Funktion getOrderSummaryHTML() hinzugefügt */
+/*Funktion getOrderSummaryHTML() */
 /**
  * Baut den HTML-Code für die Bestellzusammenfassung.
  * @param {string} name - Der Name des Kunden.
@@ -301,7 +300,7 @@ function getOrderSummaryHTML(name, address, note, cart) {
   `;
 }
 
-/* Neue Funktion setupSortListener() hinzugefügt */
+/* Funktion setupSortListener() */
 /**
  * Setzt den Eventlistener für das Sortier-Dropdown.
  */
@@ -337,6 +336,7 @@ function initApp() {
 
   // Setzt Toggle-Funktion für den Warenkorb
   setupCartToggle();
+  
   // Setzt Darkmode-Funktionalität
   setupDarkmode();
 }
