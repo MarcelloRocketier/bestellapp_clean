@@ -8,20 +8,44 @@ const foodItems = [
   { id: 6, name: "Ceviche", image: "img/food/ceviche.jpg", price: 6.5, category: "Meeresfrüchte" },
 ];
 
-// Warenkorb (initial leer, eventuell aus localStorage laden)
+// Warenkorb (initial leer, evtl. aus LocalStorage laden)
 let cart = [];
 const savedCart = localStorage.getItem("cart");
 if (savedCart) {
   cart = JSON.parse(savedCart);
 }
 
-/* Funktionen für den Warenkorb */
+// Funktionen für den Warenkorb   
 
-// Fügt ein Gericht zum Warenkorb hinzu
+/**
+Gibt den HTML-Code für einen einzelnen Warenkorb-Eintrag zurück.
+ * @param {Object} item - Das Warenkorb-Item.
+ * @returns {string} HTML-String für das Item.
+ */
+
+function getCartItemHTML(item) {
+  return `
+    <div class="cart-item">
+      <span class="item-name">${item.name}</span>
+      <div class="quantity-control">
+        <button onclick="changeQuantity(${item.id}, -1)">-</button>
+        <span>${item.quantity}</span>
+        <button onclick="changeQuantity(${item.id}, 1)">+</button>
+      </div>
+      <span class="price">${(item.price * item.quantity).toFixed(2)} €</span>
+      <button class="remove-btn" onclick="removeFromCart(${item.id})">x</button>
+    </div>
+  `;
+}
+
+/**
+ * Fügt ein Gericht zum Warenkorb hinzu und aktualisiert die Anzeige.
+ * @param {number} id - Die ID des Gerichts.
+ */
+
 function addToCart(id) {
   const item = foodItems.find(food => food.id === id);
   const cartItem = cart.find(i => i.id === id);
-
   if (cartItem) {
     cartItem.quantity++;
   } else {
@@ -31,12 +55,18 @@ function addToCart(id) {
   saveCart();
 }
 
-// Speichert den Warenkorb im LocalStorage
+/**
+ * Speichert den Warenkorb im LocalStorage.
+ */
+
 function saveCart() {
   localStorage.setItem("cart", JSON.stringify(cart));
 }
 
-// Rendert den Warenkorb und zeigt alle Artikel an
+/**
+ * Rendert den Warenkorb, indem für jedes Item die HTML-Template-Funktion verwendet wird.
+ */
+
 function renderCart() {
   const cartContainer = document.getElementById("cart-items");
   cartContainer.innerHTML = "";
@@ -47,29 +77,22 @@ function renderCart() {
   }
 
   cart.forEach((item) => {
-    cartContainer.innerHTML += `
-      <div class="cart-item">
-        <span class="item-name">${item.name}</span>
-        <div class="quantity-control">
-          <button onclick="changeQuantity(${item.id}, -1)">-</button>
-          <span>${item.quantity}</span>
-          <button onclick="changeQuantity(${item.id}, 1)">+</button>
-        </div>
-        <span class="price">${(item.price * item.quantity).toFixed(2)} €</span>
-        <button class="remove-btn" onclick="removeFromCart(${item.id})">x</button>
-      </div>
-    `;
+    cartContainer.innerHTML += getCartItemHTML(item);
   });
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   cartContainer.innerHTML += `<hr><p><strong>Gesamt: ${total.toFixed(2)} €</strong></p>`;
 }
 
-// Ändert die Menge eines Artikels
+/**
+ * Ändert die Menge eines Artikels im Warenkorb.
+ * @param {number} id - Die ID des Artikels.
+ * @param {number} delta - Die Änderung der Menge (positiv oder negativ).
+ */
+
 function changeQuantity(id, delta) {
   const item = cart.find(i => i.id === id);
   if (!item) return;
-
   item.quantity += delta;
   if (item.quantity <= 0) {
     cart = cart.filter(i => i.id !== id);
@@ -78,15 +101,24 @@ function changeQuantity(id, delta) {
   saveCart();
 }
 
-// Entfernt einen Artikel aus dem Warenkorb
+/**
+ * Entfernt einen Artikel aus dem Warenkorb.
+ * @param {number} id - Die ID des zu entfernenden Artikels.
+ */
+
 function removeFromCart(id) {
   cart = cart.filter(i => i.id !== id);
   renderCart();
   saveCart();
 }
-/* Funktionen für das Menü     */
 
-// Rendert das Menü basierend auf einem Filter (Kategorie)
+/* Funktionen für das Menü        */
+
+/**
+ * Rendert das Menü basierend auf einem Filter (Kategorie).
+ * @param {string} [filter="Alle"] - Die Kategorie, nach der gefiltert werden soll.
+ */
+
 function renderMenu(filter = "Alle") {
   const menuSection = document.querySelector(".menu");
   menuSection.innerHTML = "";
@@ -98,15 +130,9 @@ function renderMenu(filter = "Alle") {
   const sortSelect = document.getElementById("sort-select");
   const sortValue = sortSelect ? sortSelect.value : "";
 
-  if (sortValue === "price-asc") {
-    filteredItems.sort((a, b) => a.price - b.price);
-  } else if (sortValue === "price-desc") {
-    filteredItems.sort((a, b) => b.price - a.price);
-  } else if (sortValue === "name-asc") {
-    filteredItems.sort((a, b) => a.name.localeCompare(b.name));
-  } else if (sortValue === "name-desc") {
-    filteredItems.sort((a, b) => b.name.localeCompare(a.name));
-  }
+  // Sortierlogik ausgelagert in sortItems() 
+
+  filteredItems = sortItems(filteredItems, sortValue);
 
   filteredItems.forEach((item) => {
     menuSection.innerHTML += `
@@ -120,7 +146,10 @@ function renderMenu(filter = "Alle") {
   });
 }
 
-// Rendert die Filter-Buttons basierend auf den Kategorien
+/**
+ * Rendert die Filter-Buttons basierend auf den Kategorien.
+ */
+
 function renderFilters() {
   const categories = ["Alle", ...new Set(foodItems.map(item => item.category))];
   const container = document.getElementById("filter-buttons");
@@ -130,7 +159,6 @@ function renderFilters() {
     const button = document.createElement("button");
     button.textContent = category;
     button.onclick = () => {
-      // Entfernt die aktive Klasse von allen Buttons und fügt sie dem geklickten Button hinzu
       document.querySelectorAll("#filter-buttons button").forEach(btn => btn.classList.remove("active"));
       button.classList.add("active");
       renderMenu(category);
@@ -138,12 +166,19 @@ function renderFilters() {
     container.appendChild(button);
   });
 
+  // Setze den ersten Button standardmäßig als aktiv
+
   const defaultBtn = container.querySelector("button");
   if (defaultBtn) defaultBtn.classList.add("active");
 }
-/* Funktionen für Bestellungen */
 
-// Öffnet das Bestellformular (falls der Warenkorb nicht leer ist)
+
+/* Funktionen für Bestellungen    */
+
+/**
+ * Öffnet das Bestellformular, sofern der Warenkorb nicht leer ist.
+ */
+
 function handleOrder() {
   if (cart.length === 0) {
     alert("Dein Warenkorb ist leer.");
@@ -152,7 +187,10 @@ function handleOrder() {
   document.getElementById("order-form").classList.remove("hidden-order-form");
 }
 
-// Zeigt das Order Success Modal an und leert den Warenkorb
+/**
+ * Verarbeitet die Bestellung, zeigt das Order Success Modal an und leert den Warenkorb.
+ */
+
 function submitOrder() {
   const name = document.getElementById("customer-name").value.trim();
   const address = document.getElementById("customer-address").value.trim();
@@ -163,48 +201,43 @@ function submitOrder() {
     return;
   }
 
-  const summary = cart.map(item =>
-    `${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)} €`
-  ).join("<br>");
+  // Bestellzusammenfassung in separate Funktion ausgelagert
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
-  const message = `
-    <strong>Name:</strong> ${name}<br>
-    <strong>Adresse:</strong> ${address}<br><br>
-    <strong>Bestellung:</strong><br>${summary}<br><br>
-    <strong>Gesamt:</strong> ${total.toFixed(2)} €<br>
-    <strong>Notiz:</strong> ${note || "-"}`;
-
-  // Zeige die Bestellzusammenfassung im Modal
-  document.getElementById("order-summary-text").innerHTML = message;
+  const summaryHTML = getOrderSummaryHTML(name, address, note, cart);
+  document.getElementById("order-summary-text").innerHTML = summaryHTML;
   document.getElementById("order-success").classList.remove("hidden");
 
-  // Warenkorb leeren und speichern
   cart = [];
   saveCart();
   renderCart();
-  // Schließe das Bestellformular
   document.getElementById("order-form").classList.add("hidden-order-form");
 }
 
-// Schließt das Bestellbestätigungs-Modal
+/**
+ * Schließt das Bestellbestätigungs-Modal.
+ */
+
 function closeOrderModal() {
   document.getElementById("order-success").classList.add("hidden");
 }
 
 /* Funktionen für Toggle & Darkmode */
+/**
+ * Schaltet den Warenkorb-Toggle ein (insbesondere für mobile Geräte).
+ */
 
-// Toggle für den Warenkorb (insbesondere für Mobile)
 function setupCartToggle() {
   const cartEl = document.querySelector(".cart");
   const toggleBtn = document.getElementById("cart-toggle");
-
   toggleBtn.onclick = () => {
     cartEl.classList.toggle("open");
   };
 }
 
-// Darkmode-Einstellungen
+/**
+ * Setzt die Darkmode-Funktionalität.
+ */
+
 function setupDarkmode() {
   const toggleBtn = document.getElementById("darkmode-toggle");
   const savedMode = localStorage.getItem("darkmode");
@@ -220,7 +253,74 @@ function setupDarkmode() {
   };
 }
 
-// Init-Funktion, die beim Laden der Seite aufgerufen wird
+/* Hilfsfunktionen (Refactoring)  */
+/* Neue Funktion sortItems() hinzugefügt */
+/**
+ * Sortiert ein Array von Items basierend auf dem angegebenen Sortierwert.
+ * @param {Array} items - Die zu sortierenden Items.
+ * @param {string} sortValue - Der Sortierwert ("price-asc", "price-desc", "name-asc", "name-desc").
+ * @returns {Array} Die sortierten Items.
+ */
+
+function sortItems(items, sortValue) {
+  switch (sortValue) {
+    case "price-asc":
+      return items.sort((a, b) => a.price - b.price);
+    case "price-desc":
+      return items.sort((a, b) => b.price - a.price);
+    case "name-asc":
+      return items.sort((a, b) => a.name.localeCompare(b.name));
+    case "name-desc":
+      return items.sort((a, b) => b.name.localeCompare(a.name));
+    default:
+      return items;
+  }
+}
+
+/* Neue Funktion getOrderSummaryHTML() hinzugefügt */
+/**
+ * Baut den HTML-Code für die Bestellzusammenfassung.
+ * @param {string} name - Der Name des Kunden.
+ * @param {string} address - Die Adresse des Kunden.
+ * @param {string} note - Eine optionale Notiz.
+ * @param {Array} cart - Das aktuelle Warenkorb-Array.
+ * @returns {string} Der HTML-String für die Bestellzusammenfassung.
+ */
+
+function getOrderSummaryHTML(name, address, note, cart) {
+  const summary = cart.map(item =>
+    `${item.name} x ${item.quantity} = ${(item.price * item.quantity).toFixed(2)} €`
+  ).join("<br>");
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  return `
+    <strong>Name:</strong> ${name}<br>
+    <strong>Adresse:</strong> ${address}<br><br>
+    <strong>Bestellung:</strong><br>${summary}<br><br>
+    <strong>Gesamt:</strong> ${total.toFixed(2)} €<br>
+    <strong>Notiz:</strong> ${note || "-"}
+  `;
+}
+
+/* Neue Funktion setupSortListener() hinzugefügt */
+/**
+ * Setzt den Eventlistener für das Sortier-Dropdown.
+ */
+
+function setupSortListener() {
+  const sortSelect = document.getElementById("sort-select");
+  if (sortSelect) {
+    sortSelect.onchange = () => {
+      const activeFilterBtn = document.querySelector("#filter-buttons button.active");
+      const activeCategory = activeFilterBtn ? activeFilterBtn.textContent : "Alle";
+      renderMenu(activeCategory);
+    };
+  }
+}
+
+// Initialisierung
+
+// Init-Funktion: Wird beim Laden der Seite aufgerufen und initialisiert alle Funktionen.
+
 function initApp() {
   renderFilters();
   renderMenu();
@@ -232,22 +332,16 @@ function initApp() {
   const orderBtn = document.getElementById("order-button");
   if (orderBtn) orderBtn.onclick = handleOrder;
 
-  const sortSelect = document.getElementById("sort-select");
-  if (sortSelect) {
-    sortSelect.onchange = () => {
-      const activeFilterBtn = document.querySelector("#filter-buttons button.active");
-      const activeCategory = activeFilterBtn ? activeFilterBtn.textContent : "Alle";
-      renderMenu(activeCategory);
-    };
-  }
+  // Verwendet die neue Hilfsfunktion für den Sortier-Listener
+  setupSortListener();
 
-  // Setze Toggle-Funktion für den Warenkorb
+  // Setzt Toggle-Funktion für den Warenkorb
   setupCartToggle();
-  // Setze Darkmode-Funktionalität
+  // Setzt Darkmode-Funktionalität
   setupDarkmode();
 }
 
-// Exponiere Funktionen im globalen Scope, falls nötig
+// Exponiert Funktionen, die in HTML inline verwendet werden
 window.closeOrderModal = closeOrderModal;
 window.addToCart = addToCart;
 window.changeQuantity = changeQuantity;

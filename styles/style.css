@@ -25,6 +25,13 @@ body {
   color: #f1f1f1;
 }
 
+.darkmode .restaurant-info {
+  background-color: #2a2a2a;
+  color: #f1f1f1;
+  border-color: #444;
+  box-shadow: none; 
+}
+
 /* HEADER */
 header {
   position: relative;
@@ -44,7 +51,7 @@ header {
   height: auto;
   position: absolute;
   left: 50%;
-  bottom: -80px;
+  bottom: -50px;
   transform: translateX(-50%);
   background-color: #f90;
   border-radius: 50% / 40%;
@@ -53,10 +60,10 @@ header {
   z-index: 2;
 }
 
-/* Utility Buttons (Darkmode & Warenkorb) */
+/* Utility Buttons (Darkmode & Warenkorb) – global einheitlich */
 button#darkmode-toggle,
 button#cart-toggle {
-  position: absolute;
+  position: fixed; /* Wir setzen beide Buttons fix, damit sie immer sichtbar sind */
   top: 10px;
   padding: 6px 10px;
   border: none;
@@ -65,8 +72,11 @@ button#cart-toggle {
   font-weight: bold;
   cursor: pointer;
   border-radius: 4px;
+  font-size: 1em;
+  z-index: 10000;
 }
 
+/* Position: Darkmode rechts, Warenkorb ganz rechts */
 button#darkmode-toggle {
   right: 120px;
 }
@@ -125,11 +135,11 @@ footer {
 
 /* WARENKORB (Desktop) */
 .cart {
-  width: 300px;
+  width: 300px;  
   position: sticky;
   top: 20px;
   right: 10px;
-  max-height: calc(100vh - 40px);
+  max-height: calc(100vh - 40px);  
   overflow-y: auto;
   z-index: 10;
   background-color: #fff;
@@ -292,8 +302,9 @@ footer {
   color: #fff;
 }
 
-/* Mobile Warenkorb & Toggle */
-@media (max-width: 768px) {
+/* Mobile Warenkorb & Toggle – gilt für alle Bildschirmgrößen unter 992px */
+@media (max-width: 991px) {
+  /* Warenkorb als Overlay */
   .cart {
     position: fixed;
     bottom: 0;
@@ -304,28 +315,33 @@ footer {
     padding: 15px;
     display: none;  /* Standardmäßig ausgeblendet */
     border-radius: 15px 15px 0 0;
+    max-height: 60vh;
+    overflow-y: auto;
   }
-
   .cart.open {
     display: block;
   }
-
+  
+  /* Warenkorb-Toggle-Button – behält die globalen Maße (unverändert) */
   #cart-toggle {
     position: fixed;
-    bottom: 10px;
+    top: 10px;  /* Im Header oben rechts, wie der Darkmode-Button */
     right: 10px;
-    background-color: #ff8008;
-    color: white;
-    padding: 15px;
-    font-size: 1.2em;
-    border-radius: 50%;
+    background-color: #f90;
+    color: #fff;
+    padding: 6px 10px !important;
+    font-size: 1em !important;
+    border-radius: 4px !important;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
     cursor: pointer;
     z-index: 10000;
+    width: auto !important;
+    height: auto !important;
+    line-height: normal !important;
   }
 }
 
-/* Desktop: Zwei-Spalten-Layout für Main */
+/* Desktop: Zwei-Spalten-Layout für Main (ab 992px) */
 @media (min-width: 992px) {
   main {
     display: grid;
